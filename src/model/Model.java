@@ -44,7 +44,7 @@ public class Model {
             panelIndices = new int[]{1, 2, 3};
             panelImageIndexMap = new HashMap<>();
             isButtonClicked = new AtomicBoolean(false);
-            life = 0;
+            life = 3;
     
     }
     
@@ -70,7 +70,7 @@ public class Model {
     level1();
     
 }
-    public void level1() {
+public void level1() {
     System.out.println("Nivel 1: Iniciando...");
 
     // Actualizar los primeros tres paneles inmediatamente
@@ -83,24 +83,23 @@ public class Model {
             // Actualiza un panel aleatorio
             updateSinglePanelRandomly();
             
-                
-            
-            // Verificar si hay paneles coincidentes
-            if (checkForDuplicateImages()&& button) {
-                // Si hay coincidencias, se debe establecer shouldStopTimer a verdadero
-                
-                shouldStopTimer = true;
-                 life++;
-                 controller.updateLifeIcon(life,false);
 
-                 
-                 
-            }else {
-                // Aquí manejas el caso donde no hay duplicados o el botón no ha sido presionado
-                // Puedes hacer algo aquí o simplemente no hacer nada
-                isButtonClicked = new AtomicBoolean(false);
-                button = false ;     
+            // Verificar si hay paneles coincidentes y si el botón ha sido presionado
+            if (checkForDuplicateImages() && button) {
+                // Si hay coincidencias, se debe establecer shouldStopTimer a verdadero
+                shouldStopTimer = true;
                 
+            } else if (!checkForDuplicateImages() && button) {
+                // Aquí manejas el caso donde no hay duplicados pero el botón ha sido presionado
+                button = false;
+                life--;
+                controller.updateLifeIcon(life+1, false);
+                 
+            } else {
+                // Aquí manejas el caso donde no hay duplicados y el botón no ha sido presionado
+                // Puedes hacer algo aquí o simplemente no hacer nada
+                isButtonClicked.set(false);
+                button = false;
             }
 
             // Si shouldStopTimer es verdadero, detener el temporizador
@@ -108,11 +107,11 @@ public class Model {
                 ((Timer) e.getSource()).stop();
                 System.out.println("Nivel 1: end...");
                 // Aquí puedes llamar a otro método o realizar acciones adicionales si es necesario
-                 new Timer(2000, new ActionListener() {
+                new Timer(2000, new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         ((Timer) e.getSource()).stop(); // Detener este temporizador
-                         // Prepararse para el siguiente nivel
+                        // Prepararse para el siguiente nivel
                         resetForNextRound();
                         level2(); // Comenzar el nivel 2
                     }

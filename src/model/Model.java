@@ -23,7 +23,7 @@ import javax.swing.Timer;
  * @author tokyo
  */
 public class Model {
-    private int difficultyLevel = 5; // Comienza con 3 paneles
+    private int difficultyLevel = 4; // Comienza con 3 paneles
     private Random random = new Random();       
     private Timer updateTimer; // Timer para actualizar los paneles
     private int updateInterval = 3000; // Intervalo de actualización inicial de 3 segundos
@@ -51,9 +51,9 @@ public class Model {
             panelImageIndexMap = new HashMap<>();
             isButtonClicked = new AtomicBoolean(false);
             life = 0;
-            totalAttempts = 2;
-            totalSuccesses = 2;
-            totalFailures = 2;
+            totalAttempts = 1;
+            totalSuccesses = 1;
+            totalFailures = 1;
             score = 000;
     
     }
@@ -90,7 +90,7 @@ public class Model {
     updateTimer = new Timer(2300, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Actualiza un panel aleatorio
+            // Actualiza un panel aleatorio    
             duplicates = checkForDuplicateImages();
             updateSinglePanelRandomly();
             
@@ -106,12 +106,12 @@ public class Model {
                     }
                     
                     if (shouldEndLevel()) {
-                        concludeLevel(e);
+                        concludeLevel(e,2);
                     }
 
                     // Detiene el delayTimer para evitar múltiples instancias
                    // ((Timer)e.getSource()).stop();
-                  
+            
         }
        
     });
@@ -201,10 +201,10 @@ public class Model {
     private boolean shouldEndLevel() {
     return shouldStopTimer;
 }
-    private void concludeLevel(ActionEvent e) {
+    private void concludeLevel(ActionEvent e, int level) {
     ((Timer) e.getSource()).stop();
     System.out.println("Nivel 1: end...");
-    prepareForNextLevel();
+    prepareForNextLevel(level);
 }
     
     private void handleSuccess() {
@@ -214,20 +214,47 @@ public class Model {
         score += 15;
         //updateScore(); // Actualizar la puntuación aquí
         shouldStopTimer = true;
+        button = false;
         
     }
     
-    private void prepareForNextLevel() {
-    new Timer(2000, new ActionListener() {
+ private void prepareForNextLevel(int caseNumber) {
+    new Timer(1200, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             ((Timer) e.getSource()).stop();
             resetForNextRound();
-            level2();
+            switch (caseNumber) {
+                case 2:
+                    level2(2210);
+                    break;
+                case 3:
+                    level3(2200);
+                    break;
+                case 4:
+                    level4(2050);
+                    break;
+                case 5:
+                    level5(2030);
+                    break;
+                case 6:
+                    level6(1990);
+                    break;
+                case 7:
+                    controller.setEnd(totalAttempts, totalSuccesses, totalFailures);
+                    break;
+                // Add additional cases for more levels
+                default:
+                    System.out.println("Level " + caseNumber + " not implemented.");
+                    break;
+            }
         }
+
+       
     }).start();
 }
 
+ 
     private void handleFailure(ActionEvent e) {
         // Lógica para manejar el fallo (cuando no hay coincidencia y se presiona el botón)
         life++;
@@ -258,62 +285,208 @@ public class Model {
 //    // Actualizar la puntuación aquí
 //    score.setText(String.format("%03d", totalSuccesses * 15)); // Suponiendo que score es un JLabel
 //}
-    public void level2() {
+    public void level2(int time) {
         System.out.println("Nivel 2: Iniciando...");
-//  // Actualizar los primeros tres paneles inmediatamente
-//    startUpdatingPanels();
-//
-//    // Crear un Timer para actualizar un panel aleatorio cada 2 segundos
-//    updateTimer = new Timer(4200, new ActionListener() {
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            // Actualiza un panel aleatorio
-//            updateSinglePanelRandomly();
-//
-//            // Inicia un Timer que espera 500 milisegundos antes de comprobar las condiciones
-//            Timer delayTimer = new Timer(1300, new ActionListener() {
-//                @Override
-//                public void actionPerformed(ActionEvent e) {
-//                    // Verificar si hay paneles coincidentes y si el botón ha sido presionado
-//                    if (checkForDuplicateImages() && button) {
-//                        handleSuccess();
-//                      
-//                        level3();
-//                    } else if (!checkForDuplicateImages() && button) {
-//                        handleFailure();
-//                    } else if (checkForDuplicateImages() && !button) {
-//                        handleMissedOpportunity();
-//                    } else {
-//                        // Si no hay coincidencias y el botón no ha sido presionado, no se hace nada
-//                        isButtonClicked.set(false);
-//                        button = false;
-//                    }
-//
-//                    // Detiene el delayTimer para evitar múltiples instancias
-//                    ((Timer)e.getSource()).stop();
-//                    
-//                }
-//
-//                
-//            });
-//            delayTimer.setRepeats(false); // Asegura que el evento solo se ejecute una vez
-//            delayTimer.start();
-//            
-//        }
-//       
-//    });
-//   
-//    
-//
-//    updateTimer.setRepeats(true);
-//    updateTimer.start();
-//    
-    }
-    
-    
-    private void level3() {
+ // Actualizar los primeros tres paneles inmediatamente
+    startUpdatingPanels();
+
+    // Crear un Timer para actualizar un panel aleatorio cada 2 segundos
+    updateTimer = new Timer(time, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Actualiza un panel aleatorio    
+            duplicates = checkForDuplicateImages();
+            updateSinglePanelRandomly();
+            
+               
+                    // Verificar si hay paneles coincidentes y si el botón ha sido presionado
+                    if (duplicates && button) {
+                        handleSuccess();
+                        
+                    } else if (!duplicates && button) {
+                        handleFailure(e);
+                    } else if (duplicates && !button) {
+                        handleMissedOpportunity(e);
+                    }
                     
-                }
+                    if (shouldEndLevel()) {
+                        concludeLevel(e,3);
+                    }
+
+                    // Detiene el delayTimer para evitar múltiples instancias
+                   // ((Timer)e.getSource()).stop();
+            
+        }
+       
+    });
+   
+   
+
+    updateTimer.setRepeats(true);
+    updateTimer.start();
+}
+    
+    public void level3(int time) {
+        System.out.println("Nivel 3: Iniciando...");
+ // Actualizar los primeros tres paneles inmediatamente
+    startUpdatingPanels();
+
+    // Crear un Timer para actualizar un panel aleatorio cada 2 segundos
+    updateTimer = new Timer(time, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Actualiza un panel aleatorio    
+            duplicates = checkForDuplicateImages();
+            updateSinglePanelRandomly();
+            
+               
+                    // Verificar si hay paneles coincidentes y si el botón ha sido presionado
+                    if (duplicates && button) {
+                        handleSuccess();
+                        
+                    } else if (!duplicates && button) {
+                        handleFailure(e);
+                    } else if (duplicates && !button) {
+                        handleMissedOpportunity(e);
+                    }
+                    
+                    if (shouldEndLevel()) {
+                        concludeLevel(e,4);
+                    }
+
+                    // Detiene el delayTimer para evitar múltiples instancias
+                   // ((Timer)e.getSource()).stop();
+            
+        }
+       
+    });
+   
+   
+
+    updateTimer.setRepeats(true);
+    updateTimer.start();
+}
+    
+    public void level4(int time) {
+        System.out.println("Nivel 4: Iniciando...");
+ // Actualizar los primeros tres paneles inmediatamente
+    startUpdatingPanels();
+
+    // Crear un Timer para actualizar un panel aleatorio cada 2 segundos
+    updateTimer = new Timer(time, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Actualiza un panel aleatorio    
+            duplicates = checkForDuplicateImages();
+            updateSinglePanelRandomly();
+            
+               
+                    // Verificar si hay paneles coincidentes y si el botón ha sido presionado
+                    if (duplicates && button) {
+                        handleSuccess();
+                        
+                    } else if (!duplicates && button) {
+                        handleFailure(e);
+                    } else if (duplicates && !button) {
+                        handleMissedOpportunity(e);
+                    }
+                    
+                    if (shouldEndLevel()) {
+                        concludeLevel(e,5);
+                    }
+
+                    // Detiene el delayTimer para evitar múltiples instancias
+                   // ((Timer)e.getSource()).stop();
+            
+        }
+       
+    });
+   
+   
+
+    updateTimer.setRepeats(true);
+    updateTimer.start();
+}
+    public void level5(int time) {
+        System.out.println("Nivel 5: Iniciando...");
+ // Actualizar los primeros tres paneles inmediatamente
+    startUpdatingPanels();
+
+    // Crear un Timer para actualizar un panel aleatorio cada 2 segundos
+    updateTimer = new Timer(time, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Actualiza un panel aleatorio    
+            duplicates = checkForDuplicateImages();
+            updateSinglePanelRandomly();
+            
+               
+                    // Verificar si hay paneles coincidentes y si el botón ha sido presionado
+                    if (duplicates && button) {
+                        handleSuccess();
+                        
+                    } else if (!duplicates && button) {
+                        handleFailure(e);
+                    } else if (duplicates && !button) {
+                        handleMissedOpportunity(e);
+                    }
+                    
+                    if (shouldEndLevel()) {
+                        concludeLevel(e,6);
+                    }
+
+                    // Detiene el delayTimer para evitar múltiples instancias
+                   // ((Timer)e.getSource()).stop();
+            
+        }
+       
+    });
+   
+   
+
+    updateTimer.setRepeats(true);
+    updateTimer.start();
+}
+    public void level6(int time) {
+            System.out.println("Nivel 6: Iniciando...");
+     // Actualizar los primeros tres paneles inmediatamente
+        startUpdatingPanels();
+
+        // Crear un Timer para actualizar un panel aleatorio cada 2 segundos
+        updateTimer = new Timer(time, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Actualiza un panel aleatorio    
+                duplicates = checkForDuplicateImages();
+                updateSinglePanelRandomly();
+
+
+                        // Verificar si hay paneles coincidentes y si el botón ha sido presionado
+                        if (duplicates && button) {
+                            handleSuccess();
+
+                        } else if (!duplicates && button) {
+                            handleFailure(e);
+                        } else if (duplicates && !button) {
+                            handleMissedOpportunity(e);
+                        }
+
+                        if (shouldEndLevel()) {
+                            concludeLevel(e,7);
+                        }
+
+                        // Detiene el delayTimer para evitar múltiples instancias
+                       // ((Timer)e.getSource()).stop();
+
+            }
+
+        });
+
+
+
+        updateTimer.setRepeats(true);
+        updateTimer.start();
+    }
 //public void nivelUno() {
 //    System.out.println("Nivel 1: Iniciando...");
 //
@@ -385,6 +558,13 @@ public class Model {
     
     
     public void resetForNextRound() {
+        
+        
+    // Incrementar la dificultad del juego si es necesario
+    if (difficultyLevel < 9) {
+        difficultyLevel++; // Aumentar la dificultad en 1
+    }
+    
     // Incrementar la dificultad del juego si es necesario
     // Esto puede significar aumentar el número de paneles o disminuir el tiempo de respuesta, por ejemplo
     // Si tu juego se basa en niveles, podrías incrementar el nivel aquí
@@ -393,7 +573,7 @@ public class Model {
     for (int i = 0; i < difficultyLevel; i++) {
         panelIndices[i] = i; // O cualquier otra lógica para definir los índices de los paneles
     }
-    
+    duplicates =false;
     nextLevel = false;
     shouldStopTimer = false;
     panelImageIndexMap.clear();

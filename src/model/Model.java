@@ -44,7 +44,7 @@ public class Model {
             panelIndices = new int[]{1, 2, 3};
             panelImageIndexMap = new HashMap<>();
             isButtonClicked = new AtomicBoolean(false);
-            life = 3;
+            life = 0;
     
     }
     
@@ -91,10 +91,11 @@ public void level1() {
                 
             } else if (!checkForDuplicateImages() && button) {
                 // Aquí manejas el caso donde no hay duplicados pero el botón ha sido presionado
+                life++;
+                controller.updateLifeIcon(life, false);
                 button = false;
-                life--;
-                controller.updateLifeIcon(life+1, false);
-                 
+                isButtonClicked.set(false);
+                
             } else {
                 // Aquí manejas el caso donde no hay duplicados y el botón no ha sido presionado
                 // Puedes hacer algo aquí o simplemente no hacer nada

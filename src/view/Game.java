@@ -83,7 +83,7 @@ public class Game extends JFrame {
         if (controller == null) {
             throw new RuntimeException("El controlador no ha sido inicializado.");
         }
-        score = new JLabel("Score");
+        score = new JLabel("Score: 000");
         score.setFont(new java.awt.Font("Fira Code Retina", 0, 24));
         jPanel1 = createPanel(controller.getnullIcon());
         jPanel2 = createPanel(controller.getnullIcon());
@@ -255,26 +255,26 @@ public class Game extends JFrame {
 
     
     
-   private void updateCountdownLabel(Timer countdownTimer) {
-    System.out.println("Game: Actualizando etiqueta de cuenta regresiva...");
-    int currentValue = Integer.parseInt(countdownLabel.getText());
-    if (currentValue > 1) {
-        countdownLabel.setText(String.valueOf(currentValue - 1));
-    } else {
-        countdownLabel.setText("¡Ya!");
-        countdownTimer.stop(); // Detiene el temporizador de la cuenta regresiva
-        // Inicia un nuevo temporizador que espera un segundo antes de quitar la etiqueta y empezar el juego
-        new Timer(1000, e -> {
-            System.out.println("Game: Cuenta regresiva finalizada.");
-            remove(countdownLabel); // Quita la etiqueta "¡Ya!"
-            revalidate();
-            repaint();
-            ((Timer) e.getSource()).stop(); // Detiene el temporizador que muestra "¡Ya!"
-            // Aquí se inicia el juego después de que el mensaje "¡Ya!" ha sido mostrado durante un segundo
-            model.initializeGame(); 
-        }).start();
-    }
-}
+    private void updateCountdownLabel(Timer countdownTimer) {
+     System.out.println("Game: Actualizando etiqueta de cuenta regresiva...");
+     int currentValue = Integer.parseInt(countdownLabel.getText());
+     if (currentValue > 1) {
+         countdownLabel.setText(String.valueOf(currentValue - 1));
+     } else {
+         countdownLabel.setText("¡Ya!");
+         countdownTimer.stop(); // Detiene el temporizador de la cuenta regresiva
+         // Inicia un nuevo temporizador que espera un segundo antes de quitar la etiqueta y empezar el juego
+         new Timer(1000, e -> {
+             System.out.println("Game: Cuenta regresiva finalizada.");
+             remove(countdownLabel); // Quita la etiqueta "¡Ya!"
+             revalidate();
+             repaint();
+             ((Timer) e.getSource()).stop(); // Detiene el temporizador que muestra "¡Ya!"
+             // Aquí se inicia el juego después de que el mensaje "¡Ya!" ha sido mostrado durante un segundo
+             model.initializeGame(); 
+         }).start();
+     }
+ }
  
 //   private void updatePanelImage(JPanel panel, ImageIcon newImage) {
 //        if(newImage != null) {
@@ -369,6 +369,25 @@ public class Game extends JFrame {
     Image scaledEmptyHeart = emptyHeartIconOriginal.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
     return new ImageIcon(scaledEmptyHeart);
 }
+    
+// Método para actualizar el puntaje
+    public void updateScore(int scoreToAdd) {
+        // Suponiendo que tienes una variable de instancia `currentScore` que almacena el puntaje actual.
+        int currentScore = controller.getCurrentScore(); // Necesitas un método para obtener el puntaje actual.
+        currentScore += scoreToAdd; // Añades al puntaje actual el valor pasado al método.
+
+        // Actualiza la etiqueta del puntaje en la interfaz gráfica.
+        score.setText("Score: " + currentScore);
+
+        // Actualiza cualquier otra lógica relacionada con el puntaje, si es necesario.
+        // ...
+
+        // Llama a `repaint` y `revalidate` para asegurarte de que la interfaz gráfica se actualiza.
+        score.repaint();
+        score.revalidate();
+    }    
+
+   
    
  
 }

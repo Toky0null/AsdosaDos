@@ -37,7 +37,10 @@ public class Model {
     private boolean button ;
     private  AtomicBoolean isButtonClicked;
     private int life;
-    
+    private int totalAttempts;
+    private int totalSuccesses;
+    private int totalFailures;
+    private int score;
    
         public Model(){
             controller = Controller.getInstance(this);
@@ -45,6 +48,10 @@ public class Model {
             panelImageIndexMap = new HashMap<>();
             isButtonClicked = new AtomicBoolean(false);
             life = 0;
+            totalAttempts = 2;
+            totalSuccesses = 2;
+            totalFailures = 2;
+            score = 000;
     
     }
     
@@ -88,21 +95,41 @@ public void level1() {
             if (checkForDuplicateImages() && button) {
                 // Si hay coincidencias, se debe establecer shouldStopTimer a verdadero
                 shouldStopTimer = true;
+                totalSuccesses ++;
+                score += 015;
                 
             } else if (!checkForDuplicateImages() && button) {
                 // Aquí manejas el caso donde no hay duplicados pero el botón ha sido presionado
                 life++;
                 controller.updateLifeIcon(life, false);
                 button = false;
-                isButtonClicked.set(false);
+                isButtonClicked.set(false); 
+                totalFailures++;
+                 if(life == 3){
+                     controller.setEnd(totalAttempts, totalSuccesses, totalFailures);
+                 }
                 
-            } else {
+            } else if (checkForDuplicateImages() && !button) {
+                // Tercer caso: el botón no ha sido presionad y hay coinsidencias.
+                // Por ejemplo, podrías querer incrementar el contador de intentos fallidos
+                // o mostrar algún mensaje, etc.
+                totalAttempts++;
+                life++;
+                controller.updateLifeIcon(life, false);
+                
+                isButtonClicked.set(false); 
+                totalFailures++;
+                 if(life == 3){
+                     controller.setEnd(totalAttempts, totalSuccesses, totalFailures);
+                 }
+                
+                
+            } else  {
                 // Aquí manejas el caso donde no hay duplicados y el botón no ha sido presionado
                 // Puedes hacer algo aquí o simplemente no hacer nada
                 isButtonClicked.set(false);
                 button = false;
             }
-
             // Si shouldStopTimer es verdadero, detener el temporizador
             if (shouldStopTimer) {
                 ((Timer) e.getSource()).stop();
@@ -409,6 +436,10 @@ public boolean checkForDuplicateImages() {
     // Si llegamos aquí, no hay imágenes duplicadas.
     return false;
 }
+
+    public int getScore() {
+      return score;
+    }
 
 
 

@@ -5,6 +5,8 @@ import java.util.Set;
 import javax.swing.ImageIcon;
 import model.Model;
 import view.Game;
+import view.Stats;
+
 
 /**
  * Clase Controller que maneja la interacción entre el modelo y la vista.
@@ -14,6 +16,7 @@ public class Controller {
     private Model model;
     private Game view;
     private Random random = new Random();
+    private Stats end;
     
     /**
      * Constructor de Controller.
@@ -106,5 +109,16 @@ public class Controller {
         ImageIcon icon = isActive ? getHeartIcon() : getHeartIconOff();
         view.updateLifeIcon(lifeIndex, icon);
     }
+    public void setEnd(int totalAttempts, int totalSuccesses, int totalFailures){
+    
+    
+        end = new Stats(totalAttempts, totalSuccesses, totalFailures);
+        end.setVisible(true);
+    }
 
+    public int getCurrentScore() {
+        return model.getScore();
+    }
+            
+    
 }

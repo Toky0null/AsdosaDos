@@ -32,7 +32,7 @@ public class Stats extends JFrame {
     private JButton getOutL1;
         
     public Stats (int totalAttempts, int totalSuccesses, int totalFailures){
-        super("Geometric - Estadisticas de la partida : ");
+        super("Adosados - Estadisticas de la partida : ");
         setSize(600, 550);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

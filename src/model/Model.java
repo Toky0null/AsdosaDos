@@ -42,6 +42,8 @@ public class Model {
     private int totalSuccesses;
     private int totalFailures;
     private int score;
+    private boolean duplicates;
+    
    
         public Model(){
             controller = Controller.getInstance(this);
@@ -78,27 +80,205 @@ public class Model {
     level1();
     
 }
-//    public void level1() {
+    public void level1() {
+    System.out.println("Nivel 1: Iniciando...");
+
+    // Actualizar los primeros tres paneles inmediatamente
+    startUpdatingPanels();
+
+    // Crear un Timer para actualizar un panel aleatorio cada 2 segundos
+    updateTimer = new Timer(2300, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Actualiza un panel aleatorio
+            duplicates = checkForDuplicateImages();
+            updateSinglePanelRandomly();
+            
+               
+                    // Verificar si hay paneles coincidentes y si el botón ha sido presionado
+                    if (duplicates && button) {
+                        handleSuccess();
+                        
+                    } else if (!duplicates && button) {
+                        handleFailure(e);
+                    } else if (duplicates && !button) {
+                        handleMissedOpportunity(e);
+                    }
+                    
+                    if (shouldEndLevel()) {
+                        concludeLevel(e);
+                    }
+
+                    // Detiene el delayTimer para evitar múltiples instancias
+                   // ((Timer)e.getSource()).stop();
+                  
+        }
+       
+    });
+   
+   
+
+    updateTimer.setRepeats(true);
+    updateTimer.start();
+}
+//public void level1() {
 //    System.out.println("Nivel 1: Iniciando...");
 //
 //    // Actualizar los primeros tres paneles inmediatamente
 //    startUpdatingPanels();
 //
 //    // Crear un Timer para actualizar un panel aleatorio cada 2 segundos
-//    updateTimer = new Timer(2300, new ActionListener() {
+//    updateTimer = new Timer(2000, new ActionListener() {
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//            // Actualiza un panel aleatorio
+//            updateSinglePanelRandomly();
+//            checkForDuplicateImages();
+//    
+//            // Verificar si hay paneles coincidentes y si el botón ha sido presionado
+//            if (check && button) {
+//                // Si hay coincidencias, se debe establecer shouldStopTimer a verdadero
+//                shouldStopTimer = true;
+//                totalSuccesses ++;
+//                score += 015;
+//                
+//            } else if ( !check && button) {
+//                // Aquí manejas el caso donde no hay duplicados pero el botón ha sido presionado
+//                life++;
+//                controller.updateLifeIcon(life, false);
+//                button = false;
+//                isButtonClicked.set(false); 
+//                totalFailures++;
+//                 if(life == 3){
+//                     controller.setEnd(totalAttempts, totalSuccesses, totalFailures);
+//                 }
+//                
+//            } else if (check && !button) {
+//                // Tercer caso: el botón no ha sido presionad y hay coinsidencias.
+//                // Por ejemplo, podrías querer incrementar el contador de intentos fallidos
+//                // o mostrar algún mensaje, etc.
+//                totalAttempts++;
+//                life++;
+//                controller.updateLifeIcon(life, false);
+//                
+//                isButtonClicked.set(false); 
+//                totalFailures++;
+//                 if(life == 3){
+//                     controller.setEnd(totalAttempts, totalSuccesses, totalFailures);
+//                 }
+//                               
+//                
+//            }else  {
+//                // Aquí manejas el caso donde no hay duplicados y el botón no ha sido presionado
+//                // Puedes hacer algo aquí o simplemente no hacer nada
+//              
+//                button = false;
+//            }
+//            // Si shouldStopTimer es verdadero, detener el temporizador
+//            if (shouldStopTimer) {
+//                ((Timer) e.getSource()).stop();
+//                System.out.println("Nivel 1: end...");
+//                // Aquí puedes llamar a otro método o realizar acciones adicionales si es necesario
+//                new Timer(2000, new ActionListener() {
+//                    @Override
+//                    public void actionPerformed(ActionEvent e) {
+//                        ((Timer) e.getSource()).stop(); // Detener este temporizador
+//                        // Prepararse para el siguiente nivel
+//                        resetForNextRound();
+//                        level2(); // Comenzar el nivel 2
+//                    }
+//                }).start(); // Iniciar el temporizador de espera
+//            }
+//        }
+//    });
+//
+//    // Establecer el Timer para que se repita
+//    updateTimer.setRepeats(true);
+//
+//    // Iniciar el Timer
+//    updateTimer.start();
+//}
+    private boolean shouldEndLevel() {
+    return shouldStopTimer;
+}
+    private void concludeLevel(ActionEvent e) {
+    ((Timer) e.getSource()).stop();
+    System.out.println("Nivel 1: end...");
+    prepareForNextLevel();
+}
+    
+    private void handleSuccess() {
+        // Lógica para manejar el éxito (cuando hay coincidencia y se presiona el botón)
+        
+        totalSuccesses++;
+        score += 15;
+        //updateScore(); // Actualizar la puntuación aquí
+        shouldStopTimer = true;
+        
+    }
+    
+    private void prepareForNextLevel() {
+    new Timer(2000, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ((Timer) e.getSource()).stop();
+            resetForNextRound();
+            level2();
+        }
+    }).start();
+}
+
+    private void handleFailure(ActionEvent e) {
+        // Lógica para manejar el fallo (cuando no hay coincidencia y se presiona el botón)
+        life++;
+        controller.updateLifeIcon(life, false); // Suponiendo que se maneja el ícono de vida aquí
+        button = false;
+        totalFailures++;
+        checkEndCondition(e);
+    }
+    private void handleMissedOpportunity(ActionEvent e) {
+        // Lógica para manejar una oportunidad perdida (cuando hay coincidencia y no se presiona el botón)
+        totalAttempts++;
+        life++;
+        controller.updateLifeIcon(life, false); // Suponiendo que se maneja el ícono de vida aquí
+        button = false;
+        totalFailures++;
+        checkEndCondition(e);
+    }
+
+    private void checkEndCondition(ActionEvent e) {
+        // Verificar si el juego debe terminar
+        if (life == 3) {
+             ((Timer) e.getSource()).stop();
+            controller.setEnd(totalAttempts, totalSuccesses, totalFailures);
+        }
+    }
+
+//private void updateScore() {
+//    // Actualizar la puntuación aquí
+//    score.setText(String.format("%03d", totalSuccesses * 15)); // Suponiendo que score es un JLabel
+//}
+    public void level2() {
+        System.out.println("Nivel 2: Iniciando...");
+//  // Actualizar los primeros tres paneles inmediatamente
+//    startUpdatingPanels();
+//
+//    // Crear un Timer para actualizar un panel aleatorio cada 2 segundos
+//    updateTimer = new Timer(4200, new ActionListener() {
 //        @Override
 //        public void actionPerformed(ActionEvent e) {
 //            // Actualiza un panel aleatorio
 //            updateSinglePanelRandomly();
 //
 //            // Inicia un Timer que espera 500 milisegundos antes de comprobar las condiciones
-//            Timer delayTimer = new Timer(1400, new ActionListener() {
+//            Timer delayTimer = new Timer(1300, new ActionListener() {
 //                @Override
 //                public void actionPerformed(ActionEvent e) {
 //                    // Verificar si hay paneles coincidentes y si el botón ha sido presionado
 //                    if (checkForDuplicateImages() && button) {
 //                        handleSuccess();
-//                        
+//                      
+//                        level3();
 //                    } else if (!checkForDuplicateImages() && button) {
 //                        handleFailure();
 //                    } else if (checkForDuplicateImages() && !button) {
@@ -112,9 +292,8 @@ public class Model {
 //                    // Detiene el delayTimer para evitar múltiples instancias
 //                    ((Timer)e.getSource()).stop();
 //                    
-//
 //                }
-//                
+//
 //                
 //            });
 //            delayTimer.setRepeats(false); // Asegura que el evento solo se ejecute una vez
@@ -124,178 +303,11 @@ public class Model {
 //       
 //    });
 //   
-//   
+//    
 //
 //    updateTimer.setRepeats(true);
 //    updateTimer.start();
-//}
-public void level1() {
-    System.out.println("Nivel 1: Iniciando...");
-
-    // Actualizar los primeros tres paneles inmediatamente
-    startUpdatingPanels();
-
-    // Crear un Timer para actualizar un panel aleatorio cada 2 segundos
-    updateTimer = new Timer(2000, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Actualiza un panel aleatorio
-            updateSinglePanelRandomly();
-            
-    
-            // Verificar si hay paneles coincidentes y si el botón ha sido presionado
-            if (checkForDuplicateImages() && button) {
-                // Si hay coincidencias, se debe establecer shouldStopTimer a verdadero
-                shouldStopTimer = true;
-                totalSuccesses ++;
-                score += 015;
-                
-            } else if (!checkForDuplicateImages() && button) {
-                // Aquí manejas el caso donde no hay duplicados pero el botón ha sido presionado
-                life++;
-                controller.updateLifeIcon(life, false);
-                button = false;
-                isButtonClicked.set(false); 
-                totalFailures++;
-                 if(life == 3){
-                     controller.setEnd(totalAttempts, totalSuccesses, totalFailures);
-                 }
-                
-            } else if (checkForDuplicateImages() && !button) {
-                // Tercer caso: el botón no ha sido presionad y hay coinsidencias.
-                // Por ejemplo, podrías querer incrementar el contador de intentos fallidos
-                // o mostrar algún mensaje, etc.
-                totalAttempts++;
-                life++;
-                controller.updateLifeIcon(life, false);
-                
-                isButtonClicked.set(false); 
-                totalFailures++;
-                 if(life == 3){
-                     controller.setEnd(totalAttempts, totalSuccesses, totalFailures);
-                 }
-                
-                
-            } else  {
-                // Aquí manejas el caso donde no hay duplicados y el botón no ha sido presionado
-                // Puedes hacer algo aquí o simplemente no hacer nada
-                isButtonClicked.set(false);
-                button = false;
-            }
-            // Si shouldStopTimer es verdadero, detener el temporizador
-            if (shouldStopTimer) {
-                ((Timer) e.getSource()).stop();
-                System.out.println("Nivel 1: end...");
-                // Aquí puedes llamar a otro método o realizar acciones adicionales si es necesario
-                new Timer(2000, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ((Timer) e.getSource()).stop(); // Detener este temporizador
-                        // Prepararse para el siguiente nivel
-                        resetForNextRound();
-                        level2(); // Comenzar el nivel 2
-                    }
-                }).start(); // Iniciar el temporizador de espera
-            }
-        }
-    });
-
-    // Establecer el Timer para que se repita
-    updateTimer.setRepeats(true);
-
-    // Iniciar el Timer
-    updateTimer.start();
-}
-    
-    
-    
-    private void handleSuccess() {
-        // Lógica para manejar el éxito (cuando hay coincidencia y se presiona el botón)
-        shouldStopTimer = true;
-        totalSuccesses++;
-        //updateScore(); // Actualizar la puntuación aquí
-        checkEndCondition();
-    }
-
-    private void handleFailure() {
-        // Lógica para manejar el fallo (cuando no hay coincidencia y se presiona el botón)
-        life++;
-        controller.updateLifeIcon(life, false); // Suponiendo que se maneja el ícono de vida aquí
-        button = false;
-        totalFailures++;
-        checkEndCondition();
-    }
-    private void handleMissedOpportunity() {
-        // Lógica para manejar una oportunidad perdida (cuando hay coincidencia y no se presiona el botón)
-        totalAttempts++;
-        life++;
-        controller.updateLifeIcon(life, false); // Suponiendo que se maneja el ícono de vida aquí
-        button = false;
-        totalFailures++;
-        checkEndCondition();
-    }
-
-    private void checkEndCondition() {
-        // Verificar si el juego debe terminar
-        if (life == 3) {
-            controller.setEnd(totalAttempts, totalSuccesses, totalFailures);
-        }
-    }
-
-//private void updateScore() {
-//    // Actualizar la puntuación aquí
-//    score.setText(String.format("%03d", totalSuccesses * 15)); // Suponiendo que score es un JLabel
-//}
-    public void level2() {
-        System.out.println("Nivel 2: Iniciando...");
-  // Actualizar los primeros tres paneles inmediatamente
-    startUpdatingPanels();
-
-    // Crear un Timer para actualizar un panel aleatorio cada 2 segundos
-    updateTimer = new Timer(4200, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Actualiza un panel aleatorio
-            updateSinglePanelRandomly();
-
-            // Inicia un Timer que espera 500 milisegundos antes de comprobar las condiciones
-            Timer delayTimer = new Timer(1300, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Verificar si hay paneles coincidentes y si el botón ha sido presionado
-                    if (checkForDuplicateImages() && button) {
-                        handleSuccess();
-                        resetForNextRound();
-                        level3();
-                    } else if (!checkForDuplicateImages() && button) {
-                        handleFailure();
-                    } else if (checkForDuplicateImages() && !button) {
-                        handleMissedOpportunity();
-                    } else {
-                        // Si no hay coincidencias y el botón no ha sido presionado, no se hace nada
-                        isButtonClicked.set(false);
-                        button = false;
-                    }
-
-                    // Detiene el delayTimer para evitar múltiples instancias
-                    ((Timer)e.getSource()).stop();
-                    
-                }
-
-                
-            });
-            delayTimer.setRepeats(false); // Asegura que el evento solo se ejecute una vez
-            delayTimer.start();
-            
-        }
-       
-    });
-   
-    
-
-    updateTimer.setRepeats(true);
-    updateTimer.start();
-    
+//    
     }
     
     
@@ -387,25 +399,7 @@ public void level1() {
     panelImageIndexMap.clear();
     // Limpiar el estado del juego si hay más variables o estados que manejar
     
-    // Crear un Timer que espera 1 segundo antes de continuar
-    Timer waitTimer = new Timer(1200, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Esta sección se ejecuta después de 1 segundo de espera
-            // Continuar con la lógica después de la espera
-            // Por ejemplo, iniciar el siguiente nivel o actualizar la interfaz de usuario
-            // ...
-
-            // Detener el Timer después de la espera
-            ((Timer)e.getSource()).stop();
-        }
-    });
-
-    // Asegúrate de que el Timer solo se ejecute una vez
-    waitTimer.setRepeats(false);
-
-    // Iniciar el Timer
-    waitTimer.start();
+    
 }
 
     public ImageIcon getImage(int index) {
@@ -467,7 +461,9 @@ public void level1() {
 
     private void startUpdatingPanels() {
            System.out.println("Model: cargando paneles");
+           
            controller.controllerupdatePanels(panelIndices);
+          
        }
 //    private void startUpdateSingPanels() {
 //       
@@ -532,32 +528,10 @@ public void level1() {
     }
 
 
-
-//    public int generateRandomIndex() {
-//    // Asegúrate de que el arreglo no esté vacío
-//    if (panelIndices != null && panelIndices.length > 0) {
-//        // Genera un índice aleatorio basado en la longitud del arreglo
-//        return randomS.nextInt(panelIndices.length) + 1;
-//    } else {
-//        // Manejo del caso en que el arreglo esté vacío o no inicializado
-//        System.err.println("El arreglo panelIndices está vacío o no ha sido inicializado.");
-//        return -1; // Retornar un valor que indica una condición de error o inválida
-//    }
-//}
-       
-//    public void panel9Action() {
-//        // La lógica que se ejecutaba anteriormente en el evento mouseClicked de jPanel9
-//        System.out.println("Model: Acción del panel 9 ejecutada!");
-//        if( checkForDuplicateImages()){
-//        
-//             nextLevel = true;
-//        
-//        }
-//        // ... más lógica ...
-//    }
     public void setButtonClicked(boolean clicked) {
             this.isButtonClicked.set(clicked);
             button = true;
+            System.out.println("Model: se cambio estado de button ");
         }
     
     public boolean isButtonClicked() {
@@ -579,7 +553,7 @@ public boolean checkForDuplicateImages() {
         if (!seenImageIndices.add(imageIndex)) {
             // Si el conjunto ya contenía el índice de la imagen, hemos encontrado un duplicado.
             System.out.println("Se encontró un duplicado para el índice de imagen: " + imageIndex);
-            return true;
+            return  true;
         }
     }
 

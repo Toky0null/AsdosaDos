@@ -11,30 +11,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import model.Model;
 
 public class Instrucciones extends JFrame {
     private JLabel titleLabel;
-    private JLabel instructionLabel;
-    private JButton startButton;
-    //private Player playerInstr;
-    //private Music soundtrack;
+    private JTextArea instructionTextArea;
+    private JButton backButton;
     private JTextField playerNameField;
     private Controller controller;
-   // private boolean soundstarted;
-    //private float volume;
-    //private Levels level1;
-    //private InitialWindow star;
+    Game gameView;
+    Model gameModel;
 
     public Instrucciones (Controller controller) {
-        super("Geometric-Manual de instrucciones");
-        setSize(750, 450);
+        super("Adosados - Instrucciones del juego");
+        setSize(750, 600); // Ajuste del tamaño para acomodar el texto más largo
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         Container paneIntr = getContentPane();
         paneIntr.setLayout(new BorderLayout());
-        playerNameField = new JTextField();
+
         // Crear un panel para centrar el contenido
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout());
@@ -45,22 +41,44 @@ public class Instrucciones extends JFrame {
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
         centerPanel.add(titleLabel, createGridBagConstraints(0, 0, 2, 1, GridBagConstraints.CENTER));
 
-        instructionLabel = new JLabel("Observa la figura de arriba (lado izquierdo) y selecciona entre las tres figuras cuál es la correcta");
-        instructionLabel.setHorizontalAlignment(JLabel.CENTER);
-        centerPanel.add(instructionLabel, createGridBagConstraints(0, 1, 2, 1, GridBagConstraints.CENTER));
+        // Configuración del JTextArea para las instrucciones
+        instructionTextArea = new JTextArea(5, 20); // Establece un tamaño inicial
+        instructionTextArea.setText(
+            "En Adosados aparecen en pantalla una serie de imágenes que van cambiando de una en una. " +
+            "En el momento que veas dos imágenes iguales debes pulsar el botón que está en la zona inferior derecha rápidamente. " +
+            "Si no pulsas a tiempo perderás una vida."
+        );
+        instructionTextArea.setWrapStyleWord(true);
+        instructionTextArea.setLineWrap(true);
+        instructionTextArea.setEditable(false);
+        instructionTextArea.setFocusable(false);
+        instructionTextArea.setBackground(getBackground());
+        instructionTextArea.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        startButton = new JButton("Iniciar");
-          startButton.addActionListener(new ActionListener() {
+        // Añadir el JTextArea a un JScrollPane
+        JScrollPane scrollPane = new JScrollPane(instructionTextArea);
+        scrollPane.setPreferredSize(new Dimension(700, 110)); // Ajustar el tamaño preferido del scrollPane
+        scrollPane.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.GRAY), // Borde exterior
+            BorderFactory.createEmptyBorder(10, 10, 10, 10) // Padding interior
+        ));
+
+        centerPanel.add(scrollPane, createGridBagConstraints(0, 1, 2, 1, GridBagConstraints.CENTER));
+
+        // Botón para iniciar
+        backButton = new JButton("Menú Principal");
+        backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Botón 'Iniciar' clicado"); // Agrega este mensaje de depuración
-                String playerName = playerNameField.getText();
-               
-                
+                // Acciones al pulsar el botón Iniciar
+                System.out.println("Botón 'Iniciar' pulsado.");
+                Instrucciones.this.setVisible(false);
+                // Aquí podrías agregar la lógica para cambiar a la pantalla del juego
+                // o lo que sea que deba suceder cuando se inician las instrucciones.
+                 
             }
         });
-          
-        centerPanel.add(startButton, createGridBagConstraints(0, 2, 2, 1, GridBagConstraints.CENTER));
+        centerPanel.add(backButton, createGridBagConstraints(0, 2, 2, 1, GridBagConstraints.CENTER));
 
         paneIntr.add(centerPanel, BorderLayout.CENTER);
     }
@@ -74,9 +92,5 @@ public class Instrucciones extends JFrame {
         gbc.anchor = anchor;
         gbc.insets = new Insets(5, 5, 5, 5); // Márgenes
         return gbc;
-    }
-
-    public void setController(Controller aThis) {
-        this.controller = controller;
     }
 }

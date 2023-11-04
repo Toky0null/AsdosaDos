@@ -155,6 +155,7 @@ public void initialWindowGame() {
         @Override
         public void actionPerformed(ActionEvent e) {
            // handleInstructionsButton();
+           gameController.setInstruc(gameController);
         }
     });
     

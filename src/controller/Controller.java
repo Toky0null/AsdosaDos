@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.swing.ImageIcon;
 import model.Model;
 import view.Game;
+import view.Instrucciones;
 import view.Stats;
 
 
@@ -17,7 +18,7 @@ public class Controller {
     private Game view;
     private Random random = new Random();
     private Stats end;
-    
+    private  Instrucciones instruccionesFrame;
     /**
      * Constructor de Controller.
      * @param gameModel el modelo del juego
@@ -25,6 +26,7 @@ public class Controller {
      private Controller(Model gameModel){
         this.model = gameModel;
         System.out.println("Controller: Controlador creado con el modelo.");
+        
     }
     
     // Método estático que devuelve la única instancia del controlador
@@ -120,5 +122,10 @@ public class Controller {
         return model.getScore();
     }
             
+    public void setInstruc(Controller controller){
+    instruccionesFrame = new Instrucciones(controller);
+    instruccionesFrame.setVisible(true);
     
+    
+    }
 }

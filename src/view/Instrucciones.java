@@ -11,7 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import model.Model;
+
 
 public class Instrucciones extends JFrame {
     private JLabel titleLabel;
@@ -19,8 +19,8 @@ public class Instrucciones extends JFrame {
     private JButton backButton;
     private JTextField playerNameField;
     private Controller controller;
-    Game gameView;
-    Model gameModel;
+ 
+    
 
     public Instrucciones (Controller controller) {
         super("Adosados - Instrucciones del juego");

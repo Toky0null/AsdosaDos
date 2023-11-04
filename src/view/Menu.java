@@ -147,6 +147,7 @@ public void initialWindowGame() {
         @Override
         public void actionPerformed(ActionEvent e) {
            // handlePurposeButton();
+           gameController.setOth(gameController);
         }
     });
         

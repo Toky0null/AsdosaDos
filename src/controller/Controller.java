@@ -6,6 +6,7 @@ import javax.swing.ImageIcon;
 import model.Model;
 import view.Game;
 import view.Instrucciones;
+import view.Other;
 import view.Stats;
 
 
@@ -19,6 +20,7 @@ public class Controller {
     private Random random = new Random();
     private Stats end;
     private  Instrucciones instruccionesFrame;
+    private Other other;
     /**
      * Constructor de Controller.
      * @param gameModel el modelo del juego
@@ -125,6 +127,13 @@ public class Controller {
     public void setInstruc(Controller controller){
     instruccionesFrame = new Instrucciones(controller);
     instruccionesFrame.setVisible(true);
+    
+    
+    }
+    
+     public void setOth(Controller controller){
+        other = new Other(controller);
+        other.setVisible(true);
     
     
     }
